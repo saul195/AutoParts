@@ -1,0 +1,49 @@
+.navbar {
+  background-color: var(--primary-navy);
+  color: var(--white);
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.logo {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--accent-orange);
+  cursor: pointer;
+}
+
+.logo span {
+  color: var(--white);
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--secondary-slate);
+  background-color: #00152b; /* Un tono más oscuro que el marino */
+  color: white;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--accent-orange);
+}
+
+.nav-link-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nav-link-btn:hover {
+  color: var(--accent-orange);
+}
+
+.admin-btn {
+  background-color: var(--secondary-slate);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}

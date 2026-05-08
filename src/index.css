@@ -1,0 +1,20 @@
+:root {
+  --primary-navy: #001F3F; /* Azul Marino Principal */
+  --secondary-slate: #1E293B;
+  --accent-orange: #F59E0B;
+  --bg-light: #F8FAFC;
+  --white: #ffffff;
+  --text-dark: #334155;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+}
