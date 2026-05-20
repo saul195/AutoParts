@@ -1,18 +1,25 @@
 import React, { useState } from "react";
+import { auth } from "../../services/api";
 
 const Login = ({ onLogin, onGoToRegister }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (email === "saulo0507@hotmail.com" && password === "1") {
-      onLogin("admin");
-    } else if (email === "somlozneroluas@gmail.com" && password === "2") {
-      onLogin("client");
-    } else {
-      alert("Credenciales incorrectas. Intenta de nuevo.");
+    setError("");
+    setLoading(true);
+    try {
+      const data = await auth.login(email, password);
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      onLogin(data.user.rol, data.user);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,6 +51,10 @@ const Login = ({ onLogin, onGoToRegister }) => {
             </h2>
             <p className="text-secondary">Ingresa tus credenciales para continuar</p>
           </div>
+
+          {error && (
+            <div className="alert alert-danger py-2">{error}</div>
+          )}
 
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
@@ -78,8 +89,9 @@ const Login = ({ onLogin, onGoToRegister }) => {
               style={{ backgroundColor: "#001f3f", borderRadius: "8px" }}
               onMouseEnter={(e) => e.target.style.backgroundColor = "#1e293b"}
               onMouseLeave={(e) => e.target.style.backgroundColor = "#001f3f"}
+              disabled={loading}
             >
-              Iniciar Sesión
+              {loading ? "Iniciando..." : "Iniciar Sesión"}
             </button>
           </form>
 

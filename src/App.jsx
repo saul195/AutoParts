@@ -4,23 +4,42 @@ import Login from "./page/Login/Login";
 import CrearCuenta from "./page/Login/CrearCuenta";
 import Store from "./page/Cliente/Store";
 import Cart from "./page/Cliente/Cart";
+import { auth } from "./services/api";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return localStorage.getItem("isLoggedIn") === "true";
-  });
+  const [serverOk, setServerOk] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+  const [userName, setUserName] = useState("");
 
-  const [userRole, setUserRole] = useState(() => {
-    return localStorage.getItem("userRole") || null;
-  });
-
-  const [view, setView] = useState(() => {
-    const saved = localStorage.getItem("currentView");
-    if (saved) return saved;
-    return localStorage.getItem("userRole") === "admin" ? "admin" : "client";
-  });
-
+  const [view, setView] = useState("client");
   const [authView, setAuthView] = useState("login");
+
+  useEffect(() => {
+    fetch("/api/health")
+      .then((r) => r.json())
+      .then((d) => setServerOk(d.status === "ok"))
+      .catch(() => setServerOk(false));
+  }, []);
+
+  useEffect(() => {
+    if (serverOk !== true) return;
+    const token = localStorage.getItem("token");
+    if (token) {
+      auth.me()
+        .then((user) => {
+          setIsLoggedIn(true);
+          setUserRole(user.rol);
+          setUserName(user.nombre_completo);
+          const savedView = localStorage.getItem("currentView");
+          setView(savedView || (user.rol === "admin" ? "admin" : "client"));
+        })
+        .catch(() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+        });
+    }
+  }, [serverOk]);
 
   const defaultCart = [
     { id: 1, sku: "REF-1020", name: "Amortiguador Delantero", category: "Suspensión", model: "Nissan Versa 2020", price: 1250, image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=300&fit=crop", quantity: 2 },
@@ -38,26 +57,30 @@ function App() {
   });
 
   useEffect(() => {
-    localStorage.setItem("isLoggedIn", isLoggedIn);
-    localStorage.setItem("userRole", userRole);
-    localStorage.setItem("currentView", view);
-  }, [isLoggedIn, userRole, view]);
+    if (isLoggedIn) {
+      localStorage.setItem("currentView", view);
+    }
+  }, [isLoggedIn, view]);
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  const handleLogin = (role) => {
+  const handleLogin = (role, user) => {
     setIsLoggedIn(true);
     setUserRole(role);
+    setUserName(user?.nombre || "");
     setView(role === "admin" ? "admin" : "client");
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUserRole(null);
+    setUserName("");
     setAuthView("login");
-    localStorage.clear();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("currentView");
   };
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -94,6 +117,37 @@ function App() {
   };
 
   const clearCart = () => setCart([]);
+
+  if (serverOk === null) {
+    return (
+      <div className="d-flex vh-100 w-100 align-items-center justify-content-center bg-light">
+        <div className="text-center">
+          <div className="spinner-border text-primary mb-3" role="status" style={{width: '3rem', height: '3rem'}} />
+          <p className="text-secondary fs-5">Conectando con el servidor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (serverOk === false) {
+    return (
+      <div className="d-flex vh-100 w-100 align-items-center justify-content-center bg-light">
+        <div className="text-center px-4" style={{maxWidth: '500px'}}>
+          <div className="display-1 mb-3">🔌</div>
+          <h2 className="fw-bold mb-2" style={{color: '#001F3F'}}>Servidor no disponible</h2>
+          <p className="text-secondary mb-4">
+            No se puede conectar con el servidor de la aplicación.
+            Asegúrate de que el backend esté corriendo en <strong>http://localhost:4000</strong>
+          </p>
+          <button className="btn fw-bold px-4 py-2 text-white border-0" style={{backgroundColor: '#001F3F', borderRadius: '8px'}}
+            onClick={() => window.location.reload()}
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
     return authView === "login" ? (

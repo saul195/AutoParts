@@ -1,11 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { auth } from '../../services/api';
 
 const CrearCuenta = ({ onBackToLogin }) => {
-  
-  const handleRegistro = (e) => {
+  const [nombre, setNombre] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmar, setConfirmar] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleRegistro = async (e) => {
     e.preventDefault();
-    console.log("Datos enviados para registro");
-    onBackToLogin();
+    setError("");
+
+    if (password !== confirmar) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await auth.register({ nombre_completo: nombre, email, password });
+      alert("Cuenta creada exitosamente. Ahora inicia sesión.");
+      onBackToLogin();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -37,6 +64,10 @@ const CrearCuenta = ({ onBackToLogin }) => {
             <p className="text-secondary">Únete a nuestro sistema de gestión</p>
           </div>
 
+          {error && (
+            <div className="alert alert-danger py-2">{error}</div>
+          )}
+
           <form onSubmit={handleRegistro}>
             <div className="mb-3">
               <label className="form-label fw-semibold text-secondary small">
@@ -46,6 +77,8 @@ const CrearCuenta = ({ onBackToLogin }) => {
                 type="text"
                 className="form-control py-3"
                 placeholder="Ingresa tu nombre"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
                 required
               />
             </div>
@@ -58,6 +91,8 @@ const CrearCuenta = ({ onBackToLogin }) => {
                 type="email"
                 className="form-control py-3"
                 placeholder="ejemplo@correo.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -70,6 +105,8 @@ const CrearCuenta = ({ onBackToLogin }) => {
                 type="password"
                 className="form-control py-3"
                 placeholder="Crea una contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
@@ -82,6 +119,8 @@ const CrearCuenta = ({ onBackToLogin }) => {
                 type="password"
                 className="form-control py-3"
                 placeholder="Repite tu contraseña"
+                value={confirmar}
+                onChange={(e) => setConfirmar(e.target.value)}
                 required
               />
             </div>
@@ -90,8 +129,9 @@ const CrearCuenta = ({ onBackToLogin }) => {
               style={{ backgroundColor: "#001f3f", borderRadius: "8px" }}
               onMouseEnter={(e) => e.target.style.backgroundColor = "#1e293b"}
               onMouseLeave={(e) => e.target.style.backgroundColor = "#001f3f"}
+              disabled={loading}
             >
-              Registrar Cuenta
+              {loading ? "Registrando..." : "Registrar Cuenta"}
             </button>
           </form>
 
