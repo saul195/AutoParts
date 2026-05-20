@@ -1,7 +1,4 @@
-import './Sections.css';
-
 const Inventory = () => {
-  // Datos de ejemplo con la nueva propiedad 'status'
   const inventoryData = [
     { id: 'REF-1020', desc: 'Filtro de Aceite', cat: 'Motor', model: 'Nissan March 2020', supplier: 'Refaccionaria Norte', stock: 15, status: 'Activo' },
     { id: 'REF-9988', desc: 'Balatas Delanteras', cat: 'Frenos', model: 'VW Jetta 2018', supplier: 'Frenos S.A.', stock: 8, status: 'Inactivo' },
@@ -9,71 +6,83 @@ const Inventory = () => {
   ];
 
   return (
-    <div className="admin-card">
-      <div className="section-header">
-        <h3>Inventario de Refacciones</h3>
-        <p className="section-description">Consulta y gestiona el estado de tus productos disponibles.</p>
-      </div>
-
-      {/* --- NUEVO: APARTADO DE FILTROS Y BÚSQUEDA --- */}
-      <div className="inventory-controls">
-        <div className="search-box">
-          <input type="text" placeholder="🔍 Buscar por SKU o nombre..." className="inventory-search" />
+    <div className="card shadow-sm" style={{ borderTop: '4px solid #001F3F' }}>
+      <div className="card-body">
+        <div className="border-bottom pb-3 mb-3">
+          <h3 className="text-uppercase fs-5 mb-1" style={{ color: '#001F3F', letterSpacing: '0.5px' }}>
+            Inventario de Refacciones
+          </h3>
+          <p className="text-secondary small mb-0">
+            Consulta y gestiona el estado de tus productos disponibles.
+          </p>
         </div>
-        
-        <div className="filter-group">
-          <select className="inventory-select">
-            <option value="">Todas las Categorías</option>
-            <option value="frenos">Frenos</option>
-            <option value="motor">Motor</option>
-            <option value="suspension">Suspensión</option>
-          </select>
 
-          <select className="inventory-select">
-            <option value="">Todos los Modelos</option>
-            <option value="nissan">Nissan March 2020</option>
-            <option value="vw">VW Jetta 2018</option>
-            <option value="toyota">Toyota Hilux 2022</option>
-          </select>
+        <div className="d-flex align-items-center gap-3 p-3 bg-light rounded mb-4">
+          <div className="flex-grow-1">
+            <input type="text" placeholder="🔍 Buscar por SKU o nombre..." className="form-control" />
+          </div>
+          <div className="d-flex gap-2">
+            <select className="form-select">
+              <option value="">Todas las Categorías</option>
+              <option value="frenos">Frenos</option>
+              <option value="motor">Motor</option>
+              <option value="suspension">Suspensión</option>
+            </select>
+            <select className="form-select">
+              <option value="">Todos los Modelos</option>
+              <option value="nissan">Nissan March 2020</option>
+              <option value="vw">VW Jetta 2018</option>
+              <option value="toyota">Toyota Hilux 2022</option>
+            </select>
+          </div>
         </div>
-      </div>
 
-      {/* --- TABLA ACTUALIZADA --- */}
-      <div className="table-container">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>ID / SKU</th>
-              <th>Descripción</th>
-              <th>Categoría</th>
-              <th>Modelo (Auto)</th>
-              <th className="text-center">Estado</th>
-              <th className="text-center">Existencia</th>
-              <th className="text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {inventoryData.map((item) => (
-              <tr key={item.id}>
-                <td><span className="sku-badge">{item.id}</span></td>
-                <td>{item.desc}</td>
-                <td>{item.cat}</td>
-                <td>{item.model}</td>
-                <td className="text-center">
-                  <span className={`status-pill ${item.status.toLowerCase()}`}>
-                    {item.status}
-                  </span>
-                </td>
-                <td className="text-center font-bold text-navy">{item.stock} pzas</td>
-                <td className="text-center">
-                  <button className="btn-status-toggle">
-                    Cambiar Estado
-                  </button>
-                </td>
+        <div className="table-responsive rounded border">
+          <table className="table table-hover mb-0 align-middle">
+            <thead className="text-white small text-uppercase" style={{ backgroundColor: '#001F3F' }}>
+              <tr>
+                <th className="px-3 py-3 fw-semibold">ID / SKU</th>
+                <th className="px-3 py-3 fw-semibold">Descripción</th>
+                <th className="px-3 py-3 fw-semibold">Categoría</th>
+                <th className="px-3 py-3 fw-semibold">Modelo (Auto)</th>
+                <th className="px-3 py-3 fw-semibold text-center">Estado</th>
+                <th className="px-3 py-3 fw-semibold text-center">Existencia</th>
+                <th className="px-3 py-3 fw-semibold text-center">Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {inventoryData.map((item) => (
+                <tr key={item.id}>
+                  <td className="px-3 py-3">
+                    <span className="badge bg-light text-dark border font-monospace">
+                      {item.id}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3">{item.desc}</td>
+                  <td className="px-3 py-3">{item.cat}</td>
+                  <td className="px-3 py-3">{item.model}</td>
+                  <td className="px-3 py-3 text-center">
+                    <span className={`badge rounded-pill fw-bold text-uppercase ${item.status === 'Activo' ? 'bg-success-subtle text-success-emphasis' : 'bg-danger-subtle text-danger-emphasis'}`}>
+                      {item.status}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3 text-center fw-bold" style={{ color: '#001F3F' }}>
+                    {item.stock} pzas
+                  </td>
+                  <td className="px-3 py-3 text-center">
+                    <button className="btn btn-outline-dark btn-sm"
+                      style={{ borderColor: '#001F3F', color: '#001F3F' }}
+                      onMouseEnter={(e) => { e.target.style.background = '#001F3F'; e.target.style.color = 'white'; }}
+                      onMouseLeave={(e) => { e.target.style.background = 'transparent'; e.target.style.color = '#001F3F'; }}
+                    >
+                      Cambiar Estado
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

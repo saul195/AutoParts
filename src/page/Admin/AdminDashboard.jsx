@@ -1,57 +1,58 @@
 import { useState } from 'react';
-import './AdminDashboard.css';
-
-// Importamos los componentes de las secciones
 import Clients from './Sections/Clients';
 import Inventory from './Sections/Inventory';
-import AddProduct from './Sections/AddProduct'; // <-- ESTA LÍNEA FALTABA
+import AddProduct from './Sections/AddProduct';
 import Suppliers from './Sections/Suppliers';
 import Orders from './Sections/Orders';
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState('clients');
 
-  return (
-    <div className="admin-container">
-      {/* Sidebar Lateral */}
-      <aside className="sidebar">
-        <h2 className="sidebar-title">Panel Admin</h2>
-        <ul className="sidebar-menu">
-          <li 
-            className={activeSection === 'clients' ? 'active' : ''} 
-            onClick={() => setActiveSection('clients')}
-          >
-            👥 Clientes
-          </li>
-          <li 
-            className={activeSection === 'inventory' ? 'active' : ''} 
-            onClick={() => setActiveSection('inventory')}
-          >
-            📦 Ver Inventario
-          </li>
-          <li 
-            className={activeSection === 'add-product' ? 'active' : ''} 
-            onClick={() => setActiveSection('add-product')}
-          >
-            ➕ Agregar Producto
-          </li>
-          <li 
-            className={activeSection === 'suppliers' ? 'active' : ''} 
-            onClick={() => setActiveSection('suppliers')}
-          >
-            🚚 Proveedores
-          </li>
-          <li 
-            className={activeSection === 'orders' ? 'active' : ''} 
-            onClick={() => setActiveSection('orders')}
-          >
-            🧾 Órdenes
-          </li>
-        </ul>
-      </aside>
+  const navItems = [
+    { key: 'clients', label: '👥 Clientes' },
+    { key: 'inventory', label: '📦 Ver Inventario' },
+    { key: 'add-product', label: '➕ Agregar Producto' },
+    { key: 'suppliers', label: '🚚 Proveedores' },
+    { key: 'orders', label: '🧾 Órdenes' },
+  ];
 
-      {/* Área de Contenido Principal */}
-      <main className="admin-content">
+  return (
+    <div className="d-flex" style={{ minHeight: 'calc(100vh - 70px)' }}>
+      <aside className="d-flex flex-column text-white p-4" style={{ width: '260px', backgroundColor: '#001F3F', borderTop: '1px solid #002d5c' }}>
+        <h2 className="text-uppercase mb-4 fs-5" style={{ color: '#F59E0B' }}>Panel Admin</h2>
+        <nav className="nav flex-column">
+          {navItems.map(item => (
+            <button
+              key={item.key}
+              className={`nav-link text-start px-3 py-2 mb-1 rounded ${activeSection === item.key ? '' : ''}`}
+              style={{
+                background: activeSection === item.key ? '#F59E0B' : 'transparent',
+                color: activeSection === item.key ? '#001F3F' : 'white',
+                fontWeight: activeSection === item.key ? 'bold' : 'normal',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s',
+              }}
+              onMouseEnter={(e) => {
+                if (activeSection !== item.key) {
+                  e.target.style.background = '#F59E0B';
+                  e.target.style.color = '#001F3F';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeSection !== item.key) {
+                  e.target.style.background = 'transparent';
+                  e.target.style.color = 'white';
+                }
+              }}
+              onClick={() => setActiveSection(item.key)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
+      </aside>
+      <main className="flex-grow-1 p-4" style={{ backgroundColor: '#F8FAFC' }}>
         {activeSection === 'clients' && <Clients />}
         {activeSection === 'inventory' && <Inventory />}
         {activeSection === 'add-product' && <AddProduct />}
